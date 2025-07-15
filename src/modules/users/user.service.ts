@@ -1,0 +1,68 @@
+import prisma from "../../lib/prisma";
+import { hashPassword, comparePassword, generateToken } from "../../lib/utils";
+import { CreateUserInput, CreatedUser, LoginInput, LoginResponse } from "./user.schema";
+
+export const createUser = async (user: CreateUserInput): Promise<CreatedUser> => {
+
+    try {
+        const hashedPassword = await hashPassword(user.password);
+
+        const newUser = await prisma.user.create({
+            data: {
+                ...user,
+                password: hashedPassword
+            }
+        })
+        const result: CreatedUser = {
+            id: newUser.id,
+            username: newUser.username,
+        };
+
+        if (newUser.email != null) {
+            result.email = newUser.email;
+        }
+
+        return result;
+
+    } catch (error: any) {
+        if (
+            error.code === 'P2002'
+        ) {
+            if (error.meta?.target?.includes('email')) {
+                throw new Error('Email already exist');
+            }
+            else if (error.meta?.target?.includes('username')) {
+                throw new Error('Username already exist');
+            }
+        }
+        throw new Error('Failed to create user');
+    }
+}
+
+
+export const authenticate = async (data: LoginInput): Promise<LoginResponse> => {
+    try {
+        const user = await prisma.user.findUniqueOrThrow({
+            where: {
+                username: data.username
+            }
+        })
+
+        const isMatch = await comparePassword(data.password, user.password)
+        if (!isMatch) {
+            throw new Error("Incorrect username or password");
+        }
+
+        const accessToken = await generateToken({ id: user.id, username: user.username })
+        return { accessToken: accessToken };
+
+    } catch (error: any) {
+        if (error.code === 'P2025') {
+            throw new Error("Incorrect username or password");
+        }
+        else {
+            throw error;
+        }
+    }
+
+}
