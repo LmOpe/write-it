@@ -113,7 +113,7 @@ Redis is used to track and expire blacklisted tokens.
 
 Once server is running:
 
-* Visit [`http://localhost:3000/docs`](http://localhost:3000/docs) for Swagger UI
+* Visit [`http://localhost:3000/api-docs`](http://localhost:3000/api-docs) for Swagger UI
 * OpenAPI docs are written in `*.docs.ts` files using JSDoc annotations
 
 ---

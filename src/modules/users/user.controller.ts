@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createUser, authenticate } from '../users/user.service';
+import { createUser, authenticate, logout } from '../users/user.service';
 import { generateToken } from '../../lib/utils';
 import { createdUserSchema, CreatedUser } from '../users/user.schema';
 
@@ -35,10 +35,21 @@ export const loginUser = async (req: Request, res: Response) => {
         res.status(401).json({message: error.message})
     }
 }
+
 export const getUserDetails = async (req: Request, res: Response) => {
     const user: CreatedUser = createdUserSchema.parse(req.user);
     res.status(200).json({
         message: "User details retrieved successfully",
         user: user
     });
+}
+
+export const logoutUser = async (req: Request, res: Response) => {
+    try {
+        await logout(req.token);
+        res.status(200).json({ message: 'User logged out successfully' });
+    } catch (error: any) {
+        console.error('Error logging out:', error);
+        res.status(500).json({ message: 'Failed to logout user' });
+    }
 }

@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { redisClient } from "./config";
 
 /**
  * Hashes a password using bcrypt.
@@ -48,4 +49,29 @@ export async function verifyToken(token: string): Promise<object | null> {
     } catch (error) {
         return null;
     }
+}
+
+/**
+ * Blacklists a JWT token by storing it in a blacklist.
+ * @param token - The JWT token to blacklist.
+ */
+export async function blacklistToken(token: string): Promise<void> {
+    const decoded = jwt.decode(token) as { exp?: number };
+
+    if (!decoded?.exp){
+        throw new Error('Invalid token: No expiration time found');
+    }
+
+    const tokenTTL = decoded.exp - Math.floor(Date.now() / 1000);
+    
+    if (tokenTTL <= 0) {
+        throw new Error('Invalid token: Token has already expired');
+    }
+
+    await redisClient.set(token, 'blacklisted', {
+        expiration: {
+            type: 'EX',
+            value: tokenTTL
+        }
+    })
 }

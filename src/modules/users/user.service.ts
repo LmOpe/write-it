@@ -1,5 +1,5 @@
-import prisma from "../../lib/prisma";
-import { hashPassword, comparePassword, generateToken } from "../../lib/utils";
+import { prisma } from "../../lib/config";
+import { hashPassword, comparePassword, generateToken, blacklistToken } from "../../lib/utils";
 import { CreateUserInput, CreatedUser, LoginInput, LoginResponse } from "./user.schema";
 
 export const createUser = async (user: CreateUserInput): Promise<CreatedUser> => {
@@ -65,4 +65,12 @@ export const authenticate = async (data: LoginInput): Promise<LoginResponse> => 
         }
     }
 
+}
+
+export const logout = async (token: string): Promise<void> => {
+    try {
+        await blacklistToken(token);
+    } catch (error: any) {
+        throw new Error(`Failed to logout: ${error?.message}`);
+    }
 }

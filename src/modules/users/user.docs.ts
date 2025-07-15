@@ -216,3 +216,49 @@
  *             example:
  *               message: Something went wrong. Please try again later.
  */
+
+/**
+ * @openapi
+ * /api/users/logout:
+ *   post:
+ *     summary: Logout user
+ *     description: Log the user out by blacklisting the access token.
+ *     security:
+ *       - BearerAuth: []
+ *     tags:
+ *       - Users
+ *     responses:
+ *       '200':
+ *         description: User logged out successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: User logged out successfully
+ *       '401':
+ *         description: Unauthorized - Invalid access token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Invalid access token
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Something went wrong. Please try again later.
+ */

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { registerUser, loginUser, getUserDetails } from './user.controller';
+import { registerUser, loginUser, getUserDetails, logoutUser } from './user.controller';
 import { validateRequest } from '../../middlewares/validateUser';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import { createUserSchema, loginUserSchema } from './user.schema';
@@ -9,5 +9,6 @@ const userRoutes = Router();
 userRoutes.post('/register', validateRequest(createUserSchema), registerUser);
 userRoutes.post('/login', validateRequest(loginUserSchema), loginUser);
 userRoutes.get('/', authMiddleware, getUserDetails);
+userRoutes.post('/logout', authMiddleware, logoutUser);
 
 export default userRoutes;
