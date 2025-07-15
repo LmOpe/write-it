@@ -62,7 +62,7 @@ src/
 ### 1. Clone Repo
 
 ```bash
-git clone https://github.com/your-username/writeit.git
+git clone https://github.com/LmOpe/write-it.git
 cd writeit
 ```
 
