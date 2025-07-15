@@ -1,5 +1,5 @@
-import { User } from '../users/user.schema';
-import { Post } from '../posts/posts.model';
+import { User } from '../users/user.schemas';
+import { Post } from '../posts/posts.schemas';
 
 export interface Comment {
     id: string;

@@ -134,4 +134,4 @@ POST /api/users/register
 ## 👨‍💻 Author
 
 Muhammed Lawal
-[GitHub](https://github.com/your-username)
+[GitHub](https://github.com/LmOpe)

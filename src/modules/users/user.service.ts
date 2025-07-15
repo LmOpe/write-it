@@ -1,6 +1,6 @@
 import { prisma } from "../../lib/config";
 import { hashPassword, comparePassword, generateToken, blacklistToken } from "../../lib/utils";
-import { CreateUserInput, CreatedUser, LoginInput, LoginResponse } from "./user.schema";
+import { CreateUserInput, CreatedUser, LoginInput, LoginResponse } from "./user.schemas";
 
 export const createUser = async (user: CreateUserInput): Promise<CreatedUser> => {
 

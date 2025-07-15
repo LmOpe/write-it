@@ -75,3 +75,19 @@ export async function blacklistToken(token: string): Promise<void> {
         }
     })
 }
+
+/**
+ * Create slug from a title and current time.
+ * @param title - The title to create a slug from.
+ * @return The generated slug.
+ */
+export async function createSlug(title: string): Promise<string> {
+    const slug = title
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-')
+        .substring(0, 50);
+
+    return `${slug}-${Date.now()}`;
+}

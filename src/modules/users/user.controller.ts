@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { createUser, authenticate, logout } from '../users/user.service';
 import { generateToken } from '../../lib/utils';
-import { createdUserSchema, CreatedUser } from '../users/user.schema';
+import { createdUserSchema, CreatedUser } from './user.schemas';
 
 export const registerUser = async (req: Request, res: Response) => {
     const { email, username, password } = req.body;
