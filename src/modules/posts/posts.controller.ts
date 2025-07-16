@@ -1,5 +1,5 @@
 import { paginatePosts } from '../../lib/utils';
-import { createPost, getAllPosts, updatePost } from './posts.service';
+import { createPost, deletePost, getAllPosts, updatePost } from './posts.service';
 import { NextFunction, Request, Response } from 'express';
 
 
@@ -47,6 +47,19 @@ export const updatePostHandler = async (req: Request, res: Response, next: NextF
         })
 
     } catch (error: any) {
+        next(error);
+    }
+}
+
+export const deletePostHandler = async (req: Request, res: Response, next: NextFunction) => {
+    const slug = req.params.slug;
+    const userId = req.user.id;
+
+    try {
+        await deletePost(slug, userId);
+
+        return res.status(204).send();
+    } catch (error) {
         next(error);
     }
 }

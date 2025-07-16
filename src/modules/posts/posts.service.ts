@@ -72,7 +72,7 @@ export const updatePost = async (postSlug: string, userId: string, data: UpdateP
     }
 
     try {
-        const updatedPost = prisma.post.update({
+        const updatedPost = await prisma.post.update({
             where: {
                 slug: postSlug,
                 authorId: userId
@@ -87,5 +87,18 @@ export const updatePost = async (postSlug: string, userId: string, data: UpdateP
         return updatedPost;
     } catch (error: any) {
         throw error;
+    }
+}
+
+export const deletePost = async (postSlug: string, userId: string): Promise<void> => {
+    try {
+        await prisma.post.delete({
+            where: {
+                slug: postSlug,
+                authorId: userId
+            }
+        })
+    } catch (error) {
+        throw(error);
     }
 }

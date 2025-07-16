@@ -342,3 +342,60 @@
  *             example:
  *               message: Something went wrong. Please try again later.
  */
+
+/**
+ * @openapi
+ * /api/posts/{slug}:
+ *   delete:
+ *     summary: Delete a post
+ *     description: Delete a post by its slug. Only the post author can perform this action.
+ *     tags:
+ *       - Posts
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: slug
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The slug of the post to delete.
+ *     responses:
+ *       '204':
+ *         description: Post deleted successfully (No Content)
+ *       '401':
+ *         description: Unauthorized - Missing or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Invalid access token
+ * 
+ *       '404':
+ *         description: Post not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Post not found
+ * 
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Something went wrong. Please try again later.
+ */

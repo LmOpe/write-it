@@ -6,7 +6,6 @@ export function handlePrismaError(error: any): never {
     switch (error.code) {
       case "P2002": {
         const fields = (error.meta?.target as string[])?.join(", ") || "field(s)";
-        const model = error.meta?.modelName || "resource";
         throw new ApiError(`${fields} already exist`, 409);
       }
 
@@ -16,7 +15,9 @@ export function handlePrismaError(error: any): never {
       }
 
       case "P2025":
-        throw new ApiError("Requested resource not found", 404);
+        const model = error?.meta?.modelName || "resource";
+        const message = `${model}: ${error.meta?.cause}` || "Requested resource not found";
+        throw new ApiError(message, 404);
 
       default:
         throw new ApiError(`Database error [${error.code}]`, 500);
