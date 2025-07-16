@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createUser, authenticate, logout, getUserPosts, getAllUsers } from '../users/user.service';
+import { createUser, authenticate, logout, getUserPosts, getAllUsers, updateUser } from '../users/user.service';
 import { generateToken, paginatePosts } from '../../lib/utils';
 import { createdUserSchema, CreatedUser } from './user.schemas';
 
@@ -98,4 +98,25 @@ export const getAllUsersHandler = async (req: Request, res: Response) => {
         console.error('Error fecthing users', error);
         res.status(500).json({ message: `Failed to fetch users: ${error.message}` })
     }
+}
+
+export const updateUserHandler = async (req: Request, res: Response) => {
+    const userId = req.user.id;
+    const data = req.body;
+    const token = req.token;
+
+    try {
+        const updatedUser = await updateUser(data, userId, token);
+
+        res.status(200).json({
+            message: "User detail updated successfully",
+            user: updatedUser
+        });
+    } catch (error: any) {
+    const message = error.message || "Internal server error";
+
+    const status = message.includes("Email is already taken") ? 409 : 500;
+
+    return res.status(status).json({ message });
+  }
 }

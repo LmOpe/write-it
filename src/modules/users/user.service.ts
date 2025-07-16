@@ -1,6 +1,6 @@
 import { prisma } from "../../lib/config";
 import { hashPassword, comparePassword, generateToken, blacklistToken } from "../../lib/utils";
-import { AllUsers, CreateUserInput, CreatedUser, LoginInput, LoginResponse } from "./user.schemas";
+import { AllUsers, CreateUserInput, CreatedUser, EditUser, LoginInput, LoginResponse, UserData } from "./user.schemas";
 import { UserPostArray } from "../posts/posts.schemas"
 
 export const createUser = async (user: CreateUserInput): Promise<CreatedUser> => {
@@ -133,3 +133,29 @@ export const getAllUsers = async (userId: string): Promise<AllUsers> => {
         throw new Error(`Failed to fetch users: ${error?.message}`)
     }
 }
+
+export const updateUser = async (data: EditUser, userId: string, token: string): Promise<UserData> => {
+    try {
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: { ...data, updatedAt: new Date() }
+        });
+
+        const normalizedUser = {
+            ...updatedUser,
+            password: undefined,
+            email: updatedUser.email ?? undefined
+        }
+
+        await blacklistToken(token);
+
+        return normalizedUser;
+    } catch (error: any) {
+        if (error.code === 'P2002') {
+            if (error.meta?.target?.includes('email')) {
+                throw new Error('Email already exist');
+            }
+        }
+        throw new Error("Failed to update user detail");
+    }
+};

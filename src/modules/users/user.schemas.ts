@@ -41,3 +41,11 @@ export type UserData = z.infer<typeof userDataSchema>;
 
 export const allUsersSchema = z.array(userDataSchema);
 export type AllUsers = z.infer<typeof allUsersSchema>;
+
+export const editUserSchema = z.object({
+    email: z.email().optional(),
+    username: z.string().min(1, 'Username cannot be empty').optional(),
+}).refine((data) => data.email || data.username, {
+    error: 'At least one field (email or username) must be provided',
+});
+export type EditUser = z.infer<typeof editUserSchema>;

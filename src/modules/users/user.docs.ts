@@ -448,3 +448,99 @@
  *             example:
  *               message: Something went wrong. Please try again later.
  */
+
+/**
+ * @openapi
+ * /api/users:
+ *   patch:
+ *     summary: Update user details
+ *     description: Update the authenticated user's username or email.
+ *     security:
+ *       - BearerAuth: []
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *             example:
+ *               username: "NewUsername"
+ *               email: "newemail@example.com"
+ *     responses:
+ *       '200':
+ *         description: User updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     username:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     createdAt:
+ *                        type: date-time
+ *                     updatedAt:
+ *                        type: date-time
+ *                   required:
+ *                     - id
+ *                     - username
+ *                     - createdAt
+ *                     - updateAt
+ *             example:
+ *               message: User updated successfully
+ *               user:
+ *                 id: "123456"
+ *                 username: "NewUsername"
+ *                 email: "newemail@example.com"
+ *                 createdAt: "2025-07-15T07:28:10.819Z"
+ *                 updatedAt: "2025-07-16T03:11:10.819Z"
+ *       '400':
+ *         description: Bad request - Missing or invalid fields
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: At least one valid field is required (username or email)
+ *       '401':
+ *         description: Unauthorized - Invalid access token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Invalid access token
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Something went wrong. Please try again later.
+ */
