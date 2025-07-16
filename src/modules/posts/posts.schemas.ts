@@ -25,5 +25,10 @@ export type PostWithoutAuthor = z.infer<typeof postWithoutAuthorSchema>;
 export const postArraySchema = z.array(postDataSchema);
 export type PostArray = z.infer<typeof postArraySchema>;
 
-export const userPostSchemaArray = z.array(postDataSchema.omit({ author: true }));
+export const userPostSchemaArray = z.array(postWithoutAuthorSchema);
 export type UserPostArray = z.infer<typeof userPostSchemaArray>;
+
+export const postPaginationQuerySchema = z.object({
+    page: z.coerce.number().int().positive().default(1),
+    limit: z.coerce.number().int().positive().default(10)
+});
