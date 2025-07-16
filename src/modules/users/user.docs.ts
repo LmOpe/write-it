@@ -160,7 +160,7 @@
  * @openapi
  * /api/users:
  *   get:
- *     summary: Get user details
+ *     summary: Get logged user details
  *     description: Get the details of the currently authenticated user.
  *     security:
  *       - BearerAuth: []
@@ -250,6 +250,113 @@
  *                   type: string
  *             example:
  *               message: Invalid access token
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Something went wrong. Please try again later.
+ */
+
+/**
+ * @openapi
+ * /api/users/{id}/posts:
+ *   get:
+ *     summary: Get posts by user ID
+ *     description: Retrieve all posts created by a specific user.
+ *     tags:
+ *       - Users
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user whose posts are to be retrieved
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         required: false
+ *         description: Page number (default is 1)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         required: false
+ *         description: Number of posts per page (default is 10)
+ *     responses:
+ *       '200':
+ *         description: Posts retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 posts:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       title:
+ *                         type: string
+ *                       content:
+ *                         type: string
+ *                       published:
+ *                         type: boolean
+ *                       slug:
+ *                         type: string
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *                 totalPosts:
+ *                   type: integer
+ *                 currentPage:
+ *                   type: integer
+ *                 totalPages:
+ *                   type: integer
+ *             example:
+ *               message: Posts fetched successfully
+ *               posts:
+ *                 - id: "abc123"
+ *                   title: "First Post"
+ *                   content: "This is the first post"
+ *                   published: true
+ *                   slug: "first-post"
+ *                   createdAt: "2023-10-01T12:00:00Z"
+ *                   updatedAt: "2023-10-01T12:00:00Z"
+ *               totalPosts: 25
+ *               currentPage: 1
+ *               totalPages: 3
+ * 
+ *       '401':
+ *         description: Unauthorized - Invalid access token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Invalid access token
+ * 
  *       '500':
  *         description: Internal server error
  *         content:

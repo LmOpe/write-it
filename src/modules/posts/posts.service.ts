@@ -23,6 +23,9 @@ export const createPost = async (post: CreatePostInput, userId: string): Promise
 export const getAllPosts = async (): Promise<PostArray> => {
     try {
         const posts = await prisma.post.findMany({
+            where: {
+                published: true
+            },
             select: {
                 id: true,
                 title: true,

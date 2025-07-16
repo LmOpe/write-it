@@ -1,5 +1,6 @@
+import { paginatePosts } from '../../lib/utils';
 import { createPost, getAllPosts } from './posts.service';
-import {Request, Response} from 'express';
+import { Request, Response } from 'express';
 
 
 export const createPostHandler = async (req: Request, res: Response) => {
@@ -20,23 +21,13 @@ export const createPostHandler = async (req: Request, res: Response) => {
 export const getAllPostsHandler = async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
-    
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-        
-    try {
 
+    try {
         const posts = await getAllPosts();
 
-        const paginatedPosts = posts.slice(startIndex, endIndex);
+        const response = await paginatePosts(posts, page, limit);
 
-        return res.status(200).json({
-            message: 'Posts fetched successfully',
-            posts: paginatedPosts,
-            totalPosts: posts.length,
-            currentPage: page,
-            totalPages: Math.ceil(posts.length / limit)
-        });
+        return res.status(200).json(response);
     } catch (error) {
         return res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error' });
     }

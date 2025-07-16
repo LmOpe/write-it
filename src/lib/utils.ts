@@ -2,6 +2,15 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { redisClient } from "./config";
 
+type PaginatedResponse = {
+    message: string;    
+    posts: any[];
+    totalPosts: number;
+    currentPage: number;
+    totalPages: number;
+}
+
+
 /**
  * Hashes a password using bcrypt.
  * @param password - The password to hash.
@@ -34,7 +43,7 @@ export async function comparePassword(password: string, hashedPassword: string):
 export async function generateToken(data: object): Promise<string> {
     const secretKey = process.env.JWT_SECRET || "some-random-secret-key";
     const token = jwt.sign(data, secretKey, { expiresIn: '1h' });
-    return token;     
+    return token;
 }
 
 /** * Verifies a JWT token.
@@ -58,12 +67,12 @@ export async function verifyToken(token: string): Promise<object | null> {
 export async function blacklistToken(token: string): Promise<void> {
     const decoded = jwt.decode(token) as { exp?: number };
 
-    if (!decoded?.exp){
+    if (!decoded?.exp) {
         throw new Error('Invalid token: No expiration time found');
     }
 
     const tokenTTL = decoded.exp - Math.floor(Date.now() / 1000);
-    
+
     if (tokenTTL <= 0) {
         throw new Error('Invalid token: Token has already expired');
     }
@@ -90,4 +99,26 @@ export async function createSlug(title: string): Promise<string> {
         .substring(0, 50);
 
     return `${slug}-${Date.now()}`;
+}
+
+/**
+ * Paginate posts based on the provided page and limit.
+ * @param posts - The array of posts to paginate.
+ * @param page - The current page number.
+ * @param limit - The number of posts per page.
+ */
+export async function paginatePosts(posts: any[], page: number, limit: number): Promise<PaginatedResponse> {
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    const paginatedPosts = posts.slice(startIndex, endIndex);
+
+    const response = {
+        message: 'Posts fetched successfully',
+        posts: paginatedPosts,
+        totalPosts: posts.length,
+        currentPage: page,
+        totalPages: Math.ceil(posts.length / limit)
+    }
+    return response;
 }
