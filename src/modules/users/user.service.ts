@@ -1,6 +1,6 @@
 import { prisma } from "../../lib/config";
 import { hashPassword, comparePassword, generateToken, blacklistToken } from "../../lib/utils";
-import { CreateUserInput, CreatedUser, LoginInput, LoginResponse } from "./user.schemas";
+import { AllUsers, CreateUserInput, CreatedUser, LoginInput, LoginResponse } from "./user.schemas";
 import { UserPostArray } from "../posts/posts.schemas"
 
 export const createUser = async (user: CreateUserInput): Promise<CreatedUser> => {
@@ -107,5 +107,29 @@ export const getUserPosts = async (userId: string): Promise<UserPostArray> => {
         return posts;
     } catch (error: any) {
         throw new Error(`Failed to get user posts: ${error?.message}`);
+    }
+}
+
+export const getAllUsers = async (userId: string): Promise<AllUsers> => {
+    try {
+        const users = await prisma.user.findMany({
+            where: {
+                NOT: {
+                    id: userId
+                }
+            },
+            omit: {
+                password: true,
+
+            }
+        })
+        const normalizedUsers = users.map(user => ({
+            ...user,
+            email: user.email ?? undefined
+        }))
+
+        return normalizedUsers;
+    } catch (error: any) {
+        throw new Error(`Failed to fetch users: ${error?.message}`)
     }
 }

@@ -32,3 +32,12 @@ export const loginResponseSchema = z.object({
 });
 
 export type LoginResponse = z.infer<typeof loginResponseSchema>;
+
+export const userDataSchema = createdUserSchema.extend({
+    createdAt: z.date(),
+    updatedAt: z.date()
+})
+export type UserData = z.infer<typeof userDataSchema>;
+
+export const allUsersSchema = z.array(userDataSchema);
+export type AllUsers = z.infer<typeof allUsersSchema>;

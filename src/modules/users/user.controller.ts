@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createUser, authenticate, logout, getUserPosts } from '../users/user.service';
+import { createUser, authenticate, logout, getUserPosts, getAllUsers } from '../users/user.service';
 import { generateToken, paginatePosts } from '../../lib/utils';
 import { createdUserSchema, CreatedUser } from './user.schemas';
 
@@ -81,6 +81,21 @@ export const getUserPostsHandler = async (req: Request, res: Response) => {
         res.status(200).json(response);
     } catch (error: any) {
         console.error('Error retrieving user posts:', error);
-        res.status(500).json({ message: 'Failed to retrieve user posts' });
+        res.status(500).json({ message: `Failed to retrieve user posts: ${error.message}` });
+    }
+}
+
+export const getAllUsersHandler = async (req: Request, res: Response) => {
+    const userId = req.user.id
+    try {
+        const users = await getAllUsers(userId);
+
+        res.status(200).json({
+            message: "Users retrieved successfully",
+            users: users
+        })
+    } catch (error: any) {
+        console.error('Error fecthing users', error);
+        res.status(500).json({ message: `Failed to fetch users: ${error.message}` })
     }
 }

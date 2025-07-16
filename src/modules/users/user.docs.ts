@@ -160,7 +160,7 @@
  * @openapi
  * /api/users:
  *   get:
- *     summary: Get logged user details
+ *     summary: Get logged in user details
  *     description: Get the details of the currently authenticated user.
  *     security:
  *       - BearerAuth: []
@@ -357,6 +357,85 @@
  *             example:
  *               message: Invalid access token
  * 
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Something went wrong. Please try again later.
+ */
+
+
+/**
+ * @openapi
+ * /api/users/all:
+ *   get:
+ *     summary: Get all users
+ *     description: Retrieve a list of all registered users.
+ *     tags:
+ *       - Users
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Users retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       username:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *                     required:
+ *                       - id
+ *                       - username
+ *                       - createdAt
+ *                       - updatedAt
+ *             example:
+ *               message: Users retrieved successfully
+ *               users:
+ *                 - id: "1a2b3c"
+ *                   username: "john_doe"
+ *                   email: "john@example.com"
+ *                   createdAt: "2023-10-01T12:00:00Z"
+ *                   updatedAt: "2023-10-01T12:30:00Z"
+ *                 - id: "4d5e6f"
+ *                   username: "jane_smith"
+ *                   createdAt: "2023-10-02T09:00:00Z"
+ *                   updatedAt: "2023-10-02T09:15:00Z"
+ *       '401':
+ *         description: Unauthorized - Invalid access token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Invalid access token
  *       '500':
  *         description: Internal server error
  *         content:
