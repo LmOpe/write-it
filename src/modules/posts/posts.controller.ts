@@ -1,9 +1,9 @@
 import { paginatePosts } from '../../lib/utils';
-import { createPost, getAllPosts } from './posts.service';
-import { Request, Response } from 'express';
+import { createPost, getAllPosts, updatePost } from './posts.service';
+import { NextFunction, Request, Response } from 'express';
 
 
-export const createPostHandler = async (req: Request, res: Response) => {
+export const createPostHandler = async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user.id;
     const postData = req.body;
 
@@ -13,12 +13,12 @@ export const createPostHandler = async (req: Request, res: Response) => {
             message: 'Post created successfully',
             post: newPost
         });
-    } catch (error) {
-        return res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error' });
+    } catch (error: any) {
+        next(error);
     }
 };
 
-export const getAllPostsHandler = async (req: Request, res: Response) => {
+export const getAllPostsHandler = async (req: Request, res: Response, next: NextFunction) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
 
@@ -28,7 +28,25 @@ export const getAllPostsHandler = async (req: Request, res: Response) => {
         const response = await paginatePosts(posts, page, limit);
 
         return res.status(200).json(response);
-    } catch (error) {
-        return res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error' });
+    } catch (error: any) {
+        next(error);
+    }
+}
+
+export const updatePostHandler = async (req: Request, res: Response, next: NextFunction) => {
+    const slug = req.params.slug;
+    const userId = req.user.id;
+    const data = req.body;
+
+    try {
+        const updatedPost = await updatePost(slug, userId, data);
+
+        res.status(200).json({
+            message: 'Post detail updated successfully',
+            post: updatedPost
+        })
+
+    } catch (error: any) {
+        next(error);
     }
 }

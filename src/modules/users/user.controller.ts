@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { createUser, authenticate, logout, getUserPosts, getAllUsers, updateUser } from '../users/user.service';
 import { generateToken, paginatePosts } from '../../lib/utils';
 import { createdUserSchema, CreatedUser } from './user.schemas';
@@ -100,7 +100,7 @@ export const getAllUsersHandler = async (req: Request, res: Response) => {
     }
 }
 
-export const updateUserHandler = async (req: Request, res: Response) => {
+export const updateUserHandler = async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user.id;
     const data = req.body;
     const token = req.token;
@@ -113,10 +113,11 @@ export const updateUserHandler = async (req: Request, res: Response) => {
             user: updatedUser
         });
     } catch (error: any) {
-    const message = error.message || "Internal server error";
+    // const message = error.message || "Internal server error";
 
-    const status = message.includes("Email is already taken") ? 409 : 500;
+    // const status = message.includes("Email is already taken") ? 409 : 500;
 
-    return res.status(status).json({ message });
+    // return res.status(status).json({ message });
+    next(error);
   }
 }

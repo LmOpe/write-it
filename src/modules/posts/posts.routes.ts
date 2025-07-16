@@ -1,12 +1,13 @@
-import { Router }  from 'express';
-import { createPostHandler, getAllPostsHandler } from './posts.controller';
+import { Router } from 'express';
+import { createPostHandler, getAllPostsHandler, updatePostHandler } from './posts.controller';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import { validateRequest } from '../../middlewares/validateUser';
-import { postInputSchema, postPaginationQuerySchema } from './posts.schemas';
+import { postInputSchema, postPaginationQuerySchema, updatePostSchema } from './posts.schemas';
 
 const postRoutes = Router();
 
-postRoutes.post('/', authMiddleware, validateRequest({body: postInputSchema}), createPostHandler);
-postRoutes.get('/', authMiddleware, validateRequest({query: postPaginationQuerySchema}), getAllPostsHandler);
+postRoutes.post('/', authMiddleware, validateRequest({ body: postInputSchema }), createPostHandler);
+postRoutes.get('/', authMiddleware, validateRequest({ query: postPaginationQuerySchema }), getAllPostsHandler);
+postRoutes.patch('/:slug', authMiddleware, validateRequest({ body: updatePostSchema }), updatePostHandler);
 
 export default postRoutes;

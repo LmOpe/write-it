@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import routes from "./routes/index";
 import { swaggerSpec } from "./docs/swagger";
+import { errorHandler } from "./middlewares/errorHandler";
 
 const swaggerUi = require("swagger-ui-express");
 
@@ -19,5 +20,7 @@ app.use("/api", routes);
 app.get("/", (_req: Request, res: Response) => {
   res.status(200).json({ message: "API is running!" });
 });
+
+app.use(errorHandler)
 
 export default app;

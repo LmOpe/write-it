@@ -30,8 +30,8 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         req.user = decoded;
         req.token = token;
         next();
-    } catch (error) {
+    } catch (error: any) {
         console.error('Token verification error:', error);
-        return res.status(500).json({ message: 'Internal server error' });
+        return res.status(401).json({ message: `Token verification error: ${error.message}` });
     }
 }

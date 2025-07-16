@@ -26,9 +26,8 @@ export const validateRequest = (schemas: ValidationSchemas) => {
       next();
     } catch (err: any) {
       const error = err?.issues?.[0]
-      console.log(err)
       const message =
-        `${error?.message} for ${error?.path[0]}` || "Invalid request";
+        `${error?.message}${error?.path?.length > 0 ? ` for ${error?.path[0]}` : ''}` || "Invalid request";
       return res.status(400).json({ message });
     }
   }

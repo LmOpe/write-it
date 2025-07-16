@@ -32,3 +32,11 @@ export const postPaginationQuerySchema = z.object({
     page: z.coerce.number().int().positive().default(1),
     limit: z.coerce.number().int().positive().default(10)
 });
+
+export const updatePostSchema = postInputSchema.partial().refine(
+    (data) => Object.keys(data).length > 0,
+    {
+        error: 'At least one field must be provided for update',
+    }
+)
+export type UpdatePostInput = z.infer<typeof updatePostSchema>;

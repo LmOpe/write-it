@@ -217,3 +217,128 @@
  *             example:
  *               message: Something went wrong. Please try again later.
  */
+
+/**
+ * @openapi
+ * /api/posts/{slug}:
+ *   patch:
+ *     summary: Update post details
+ *     description: Update the title, content, or published status of an existing post by its slug.
+ *     tags:
+ *       - Posts
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: slug
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The slug of the post to update.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *               published:
+ *                 type: boolean
+ *             example:
+ *               title: "Updated Post Title"
+ *               content: "Updated content of the post."
+ *               published: true
+ *     responses:
+ *       '200':
+ *         description: Post detail updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 post:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     title:
+ *                       type: string
+ *                     content:
+ *                       type: string
+ *                     published:
+ *                       type: boolean
+ *                     slug:
+ *                       type: string
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+
+ *             example:
+ *               message: Post detail updated successfully
+ *               post:
+ *                 id: "12345"
+ *                 title: "Updated Post Title"
+ *                 content: "Updated content of the post."
+ *                 published: true
+ *                 slug: "updated-post-title-12345"
+ *                 createdAt: "2023-10-01T12:00:00Z"
+ *                 updatedAt: "2023-10-02T09:30:00Z"
+ *                 author:
+
+ *       '400':
+ *         description: Bad request - Invalid input
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: At least one field must be provided
+ * 
+ *       '401':
+ *         description: Unauthorized - Missing or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Invalid access token
+ * 
+ *       '404':
+ *         description: Post not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Post not found
+ * 
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Something went wrong. Please try again later.
+ */

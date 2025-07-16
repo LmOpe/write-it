@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { redisClient } from "./config";
+import { ApiError } from "./errors";
 
 type PaginatedResponse = {
     message: string;    
@@ -68,13 +69,13 @@ export async function blacklistToken(token: string): Promise<void> {
     const decoded = jwt.decode(token) as { exp?: number };
 
     if (!decoded?.exp) {
-        throw new Error('Invalid token: No expiration time found');
+        throw new ApiError('Invalid token: No expiration time found', 401);
     }
 
     const tokenTTL = decoded.exp - Math.floor(Date.now() / 1000);
 
     if (tokenTTL <= 0) {
-        throw new Error('Invalid token: Token has already expired');
+        throw new ApiError('Invalid token: Token has already expired', 401);
     }
 
     await redisClient.set(token, 'blacklisted', {

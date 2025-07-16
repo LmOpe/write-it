@@ -2,6 +2,7 @@ import { prisma } from "../../lib/config";
 import { hashPassword, comparePassword, generateToken, blacklistToken } from "../../lib/utils";
 import { AllUsers, CreateUserInput, CreatedUser, EditUser, LoginInput, LoginResponse, UserData } from "./user.schemas";
 import { UserPostArray } from "../posts/posts.schemas"
+import { ApiError } from "../../lib/errors";
 
 export const createUser = async (user: CreateUserInput): Promise<CreatedUser> => {
 
@@ -36,7 +37,7 @@ export const createUser = async (user: CreateUserInput): Promise<CreatedUser> =>
                 throw new Error('Username already exist');
             }
         }
-        throw new Error('Failed to create user');
+        throw error;
     }
 }
 
@@ -85,7 +86,7 @@ export const logout = async (token: string): Promise<void> => {
     try {
         await blacklistToken(token);
     } catch (error: any) {
-        throw new Error(`Failed to logout: ${error?.message}`);
+        throw error;
     }
 }
 
@@ -106,7 +107,7 @@ export const getUserPosts = async (userId: string): Promise<UserPostArray> => {
 
         return posts;
     } catch (error: any) {
-        throw new Error(`Failed to get user posts: ${error?.message}`);
+        throw error;
     }
 }
 
@@ -130,7 +131,7 @@ export const getAllUsers = async (userId: string): Promise<AllUsers> => {
 
         return normalizedUsers;
     } catch (error: any) {
-        throw new Error(`Failed to fetch users: ${error?.message}`)
+        throw error;
     }
 }
 
@@ -153,9 +154,9 @@ export const updateUser = async (data: EditUser, userId: string, token: string):
     } catch (error: any) {
         if (error.code === 'P2002') {
             if (error.meta?.target?.includes('email')) {
-                throw new Error('Email already exist');
+                throw new ApiError('Email already exist', 409);
             }
         }
-        throw new Error("Failed to update user detail");
+        throw error;
     }
 };
