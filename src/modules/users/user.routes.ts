@@ -6,7 +6,8 @@ import {
     logoutUser,
     getUserPostsHandler,
     getAllUsersHandler,
-    updateUserHandler
+    updateUserHandler,
+    getAuthUserPostsHandler
 } from './user.controller';
 import { validateRequest } from '../../middlewares/validateUser';
 import { authMiddleware } from '../../middlewares/authMiddleware';
@@ -20,10 +21,11 @@ const userRoutes = Router();
 
 userRoutes.post('/register', validateRequest({ body: createUserSchema }), registerUser);
 userRoutes.post('/login', validateRequest({ body: loginUserSchema }), loginUser);
-userRoutes.get('/', authMiddleware, getUserDetails);
+userRoutes.get('/me', authMiddleware, getUserDetails);
 userRoutes.post('/logout', authMiddleware, logoutUser);
 userRoutes.get('/:id/posts', authMiddleware, getUserPostsHandler);
-userRoutes.get('/all', authMiddleware, getAllUsersHandler);
+userRoutes.get('/', authMiddleware, getAllUsersHandler);
 userRoutes.patch('/', authMiddleware, validateRequest({ body: editUserSchema }), updateUserHandler);
+userRoutes.get('/posts', authMiddleware, getAuthUserPostsHandler)
 
 export default userRoutes;

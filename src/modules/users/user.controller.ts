@@ -2,8 +2,9 @@ import { NextFunction, Request, Response } from 'express';
 import { createUser, authenticate, logout, getUserPosts, getAllUsers, updateUser } from '../users/user.service';
 import { generateToken, paginatePosts } from '../../lib/utils';
 import { createdUserSchema, CreatedUser } from './user.schemas';
+import { ApiError } from '../../lib/errors';
 
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
     const { email, username, password } = req.body;
 
     try {
@@ -29,11 +30,10 @@ export const registerUser = async (req: Request, res: Response) => {
             accessToken: token
         });
     } catch (error: any) {
-        if (error.message !== null) {
-            return res.status(409).json({ message: error.message });
+        if (error instanceof ApiError) {
+            return res.status(error.statusCode).json({ message: error.message });
         }
-        console.error('Error creating user:', error);
-        res.status(500).json({ message: 'Failed to create user' });
+        next(error);
     }
 }
 
@@ -58,17 +58,19 @@ export const getUserDetails = async (req: Request, res: Response) => {
     });
 }
 
-export const logoutUser = async (req: Request, res: Response) => {
+export const logoutUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         await logout(req.token);
         res.status(200).json({ message: 'User logged out successfully' });
     } catch (error: any) {
-        console.error('Error logging out:', error);
-        res.status(500).json({ message: 'Failed to logout user' });
+        if (error instanceof ApiError) {
+            return res.status(error.statusCode).json({ message: error.message });
+        }
+        next(error);
     }
 }
 
-export const getUserPostsHandler = async (req: Request, res: Response) => {
+export const getUserPostsHandler = async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.id;
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
@@ -80,12 +82,14 @@ export const getUserPostsHandler = async (req: Request, res: Response) => {
 
         res.status(200).json(response);
     } catch (error: any) {
-        console.error('Error retrieving user posts:', error);
-        res.status(500).json({ message: `Failed to retrieve user posts: ${error.message}` });
+        if (error instanceof ApiError) {
+            return res.status(error.statusCode).json({ message: error.message });
+        }
+        next(error);
     }
 }
 
-export const getAllUsersHandler = async (req: Request, res: Response) => {
+export const getAllUsersHandler = async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user.id
     try {
         const users = await getAllUsers(userId);
@@ -95,8 +99,10 @@ export const getAllUsersHandler = async (req: Request, res: Response) => {
             users: users
         })
     } catch (error: any) {
-        console.error('Error fecthing users', error);
-        res.status(500).json({ message: `Failed to fetch users: ${error.message}` })
+        if (error instanceof ApiError) {
+            return res.status(error.statusCode).json({ message: error.message });
+        }
+        next(error);
     }
 }
 
@@ -113,11 +119,25 @@ export const updateUserHandler = async (req: Request, res: Response, next: NextF
             user: updatedUser
         });
     } catch (error: any) {
-    // const message = error.message || "Internal server error";
+        next(error);
+    }
+}
 
-    // const status = message.includes("Email is already taken") ? 409 : 500;
+export const getAuthUserPostsHandler = async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user.id;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
 
-    // return res.status(status).json({ message });
-    next(error);
-  }
+    try {
+        const posts = await getUserPosts(userId);
+
+        const response = await paginatePosts(posts, page, limit);
+
+        res.status(200).json(response);
+    } catch (error: any) {
+        if (error instanceof ApiError) {
+            return res.status(error.statusCode).json({ message: error.message });
+        }
+        next(error);
+    }
 }
