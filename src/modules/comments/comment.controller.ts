@@ -1,6 +1,6 @@
-import { Request, Response } from "express";
-import { NextFunction } from "express";
-import { editComment, makeComment, replyComment } from "./comment.service";
+import { Request, Response, NextFunction } from "express";
+import { editComment, getPostComments, makeComment, replyComment } from "./comment.service";
+import { paginateComments } from "../../lib/utils";
 
 export const makeCommentHandler = async (req: Request, res: Response, next: NextFunction) => {
     const postSlug = req.params.slug;
@@ -48,6 +48,22 @@ export const editCommentHandler = async (req: Request, res: Response, next: Next
             message: 'Comment edited successfully.',
             comment: comment
         })
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const getPostCommentsHandler = async (req: Request, res: Response, next: NextFunction) => {
+    const postSlug = req.params.slug;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+
+    try {
+        const comments = await getPostComments(postSlug);
+
+        const paginatedComments = await paginateComments(comments, page, limit)
+
+        res.status(200).json(paginatedComments)
     } catch (error) {
         next(error);
     }

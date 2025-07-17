@@ -1,6 +1,6 @@
 /**
  * @openapi
- * /api/comments/posts/{slug}:
+ * /api/posts/{slug}/comments:
  *   post:
  *     summary: Add a comment to a post
  *     tags:
@@ -237,4 +237,93 @@
  *                 message:
  *                   type: string
  *                   example: Comment not found
+ */
+
+/**
+ * @openapi
+ * /api/posts/{slug}/comments:
+ *   get:
+ *     summary: Get all comments for a specific post
+ *     tags:
+ *       - Comment
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: slug
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Slug of the post to retrieve comments for
+ *     responses:
+ *       200:
+ *         description: Comments fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Comments fetched successfully
+ *                 comments:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         example: "c1a2b3d4"
+ *                       content:
+ *                         type: string
+ *                         example: "This is a great post!"
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2025-07-15T12:00:00.000Z"
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2025-07-15T12:30:00.000Z"
+ *                       authorId:
+ *                         type: string
+ *                         example: "user_123"
+ *                       postId:
+ *                         type: string
+ *                         example: "post_abc"
+ *       '401':
+ *         description: Unauthorized - Missing or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Invalid access token
+ * 
+ *       '404':
+ *         description: Post not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Post with the given slug does not exist!
+ * 
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Something went wrong. Please try again later.
  */

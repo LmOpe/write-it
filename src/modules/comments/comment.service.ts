@@ -1,6 +1,6 @@
 import { ApiError } from "../../lib/errors";
 import { prisma } from "../../lib/config";
-import { Comment, CommentInput, CreatedComment } from "./comment.schemas";
+import { Comment, CommentArray, CommentInput, CreatedComment } from "./comment.schemas";
 
 export const makeComment = async (postSlug: string, userId: string, data: CommentInput): Promise<CreatedComment> => {
     try {
@@ -19,15 +19,13 @@ export const makeComment = async (postSlug: string, userId: string, data: Commen
                 content: data.content,
                 authorId: userId,
                 postId: post.id
+            },
+            omit: {
+                parentCommentId: true
             }
         });
 
-        const normalizedComment = {
-            ...newComment,
-            parentCommentId: newComment.parentCommentId ?? undefined
-        }
-
-        return normalizedComment;
+        return newComment;
     } catch (error: any) {
         throw error;
     }
@@ -97,6 +95,36 @@ export const editComment = async (commentId: string, authorId: string, data: Com
         }
 
         return normalizedComment;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const getPostComments = async (postSlug: string): Promise<CommentArray> => {
+    try {
+        const post = await prisma.post.findUnique({
+            where: {
+                slug: postSlug
+            },
+            select: {
+                id: true
+            }
+        })
+
+        if (!post) {
+            throw new ApiError("Post with the given slug does not exist!", 404);
+        }
+
+        const comments = await prisma.comment.findMany({
+            where: {
+                postId: post.id
+            },
+            omit: {
+                parentCommentId: true
+            }
+        })
+
+        return comments;
     } catch (error) {
         throw error;
     }

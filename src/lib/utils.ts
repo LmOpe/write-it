@@ -2,15 +2,36 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { redisClient } from "./config";
 import { ApiError } from "./errors";
+import { PostArray } from "modules/posts/posts.schemas";
+import { CommentArray } from "modules/comments/comment.schemas";
 
-type PaginatedResponse = {
-    message: string;    
-    posts: any[];
-    totalPosts: number;
-    currentPage: number;
+interface PaginatedResponse<T> {
+    message: string;
+    [key: string]: any;
+    currentPage: number,
     totalPages: number;
 }
 
+function paginateData<T>(
+    items: T[],
+    page: number,
+    limit: number,
+    itemKey: string,
+    totalKey: string
+): PaginatedResponse<T> {
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    const paginateItems = items.slice(startIndex, endIndex);
+
+    return {
+        message: `${itemKey[0].toUpperCase() + itemKey.slice(1)} fetched successfully`,
+        [itemKey]: paginateItems,
+        [totalKey]: items.length,
+        currentPage: page,
+        totalPages: Math.ceil(items.length / limit)
+    };
+}
 
 /**
  * Hashes a password using bcrypt.
@@ -108,18 +129,32 @@ export async function createSlug(title: string): Promise<string> {
  * @param page - The current page number.
  * @param limit - The number of posts per page.
  */
-export async function paginatePosts(posts: any[], page: number, limit: number): Promise<PaginatedResponse> {
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
+export async function paginatePosts(posts: any[], page: number, limit: number): Promise<PaginatedResponse<PostArray>> {
+    const response = paginateData<PostArray>(
+        posts,
+        page,
+        limit,
+        'posts',
+        'totalPosts'
+    )
 
-    const paginatedPosts = posts.slice(startIndex, endIndex);
+    return response;
+}
 
-    const response = {
-        message: 'Posts fetched successfully',
-        posts: paginatedPosts,
-        totalPosts: posts.length,
-        currentPage: page,
-        totalPages: Math.ceil(posts.length / limit)
-    }
+/**
+ * Paginate comments based on the provided page and limit.
+ * @param comments - The array of comments to paginate.
+ * @param page - The current page number.
+ * @param limit - The number of comments per page.
+ */
+export async function paginateComments(comments: any[], page: number, limit: number): Promise<PaginatedResponse<CommentArray>> {
+    const response = paginateData<CommentArray>(
+        comments,
+        page,
+        limit,
+        'comments',
+        'totalComments'
+    )
+
     return response;
 }
