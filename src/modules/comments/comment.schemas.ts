@@ -15,6 +15,7 @@ export type CreatedComment = z.infer<typeof createdCommentSchema>;
 
 export const commentSchema: z.ZodType<any> = z.lazy(() =>
     createdCommentSchema.extend({
+        parentCommentId: z.string().optional(),
         author: createdUserSchema,
         replies: z.array(commentSchema).optional()
     })

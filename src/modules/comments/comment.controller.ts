@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { NextFunction } from "express";
-import { makeComment } from "./comment.service";
+import { makeComment, replyComment } from "./comment.service";
 
 export const makeCommentHandler = async (req: Request, res: Response, next: NextFunction) => {
     const postSlug = req.params.slug;
@@ -15,6 +15,23 @@ export const makeCommentHandler = async (req: Request, res: Response, next: Next
             comment: comment
         })
     } catch (error: any) {
+        next(error);
+    }
+}
+
+export const replyCommentHandler = async (req: Request, res: Response, next: NextFunction) => {
+    const commentId = req.params.id;
+    const userId = req.user.id;
+    const commentData = req.body;
+
+    try {
+        const comment = await replyComment(commentId, userId, commentData);
+
+        return res.status(201).json({
+            message: 'Comment Responded to successfully.',
+            comment: comment
+        })
+    } catch (error) {
         next(error);
     }
 }

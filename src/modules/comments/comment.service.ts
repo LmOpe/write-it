@@ -1,6 +1,6 @@
 import { ApiError } from "../../lib/errors";
 import { prisma } from "../../lib/config";
-import { CommentInput, CreatedComment } from "./comment.schemas";
+import { Comment, CommentInput, CreatedComment } from "./comment.schemas";
 
 export const makeComment = async (postSlug: string, userId: string, data: CommentInput): Promise<CreatedComment> => {
     try {
@@ -29,6 +29,37 @@ export const makeComment = async (postSlug: string, userId: string, data: Commen
 
         return normalizedComment;
     } catch (error: any) {
+        throw error;
+    }
+}
+
+export const replyComment = async (commentId: string, userId: string, data: CommentInput): Promise<Comment> => {
+    try {
+        const comment = await prisma.comment.findUnique({
+            where: {
+                id: commentId
+            },
+            include: {
+                post: true
+            }
+        })
+
+        if (!comment) {
+            throw new ApiError('Comment not found', 404)
+        }
+
+        const newComment = await prisma.comment.create({
+            data: {
+                content: data.content,
+                authorId: userId,
+                postId: comment.postId,
+                parentCommentId: comment.id
+            }
+        })
+
+        return newComment;
+
+    } catch (error) {
         throw error;
     }
 }
