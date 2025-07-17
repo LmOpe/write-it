@@ -4,7 +4,7 @@
  *   post:
  *     summary: Add a comment to a post
  *     tags:
- *       - Comment
+ *       - Comments
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -83,7 +83,7 @@
  *   post:
  *     summary: Add reply to a comment
  *     tags:
- *       - Comment
+ *       - Comments
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -161,7 +161,7 @@
  *   patch:
  *     summary: Edit an existing comment
  *     tags:
- *       - Comment
+ *       - Comments
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -245,7 +245,7 @@
  *   get:
  *     summary: Get all comments for a specific post
  *     tags:
- *       - Comment
+ *       - Comments
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -357,7 +357,7 @@
  *   get:
  *     summary: Get all responses/comments for a specific comment
  *     tags:
- *       - Comment
+ *       - Comments
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -449,6 +449,63 @@
  *                   type: string
  *             example:
  *               message: Post with the given Id does not exist!
+ * 
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Something went wrong. Please try again later.
+ */
+
+/**
+ * @openapi
+ * /api/comments/{id}:
+ *   delete:
+ *     summary: Delete a comment
+ *     description: Delete a Comment by its id. Only the Comment author can perform this action.
+ *     tags:
+ *       - Comments
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The id of the Comment to delete.
+ *     responses:
+ *       '204':
+ *         description: Comment deleted successfully (No Content)
+ *       '401':
+ *         description: Unauthorized - Missing or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Invalid access token
+ * 
+ *       '404':
+ *         description: Comment not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Comment not found
  * 
  *       '500':
  *         description: Internal server error

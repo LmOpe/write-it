@@ -152,3 +152,16 @@ export const getCommentResponses = async (commentId: string): Promise<CommentArr
         throw error;
     }
 }
+
+export const deleteComment = async (commentId: string, userId: string): Promise<void> => {
+    try {
+        await prisma.comment.delete({
+            where: {
+                id: commentId,
+                authorId: userId
+            }
+        })
+    } catch (error) {
+        throw error;
+    }
+}
