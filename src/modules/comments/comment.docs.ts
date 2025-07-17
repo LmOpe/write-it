@@ -255,6 +255,20 @@
  *         schema:
  *           type: string
  *         description: Slug of the post to retrieve comments for
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         required: false
+ *         description: Page number (default is 1)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         required: false
+ *         description: Number of comments per page (default is 10)
  *     responses:
  *       200:
  *         description: Comments fetched successfully
@@ -273,24 +287,33 @@
  *                     properties:
  *                       id:
  *                         type: string
- *                         example: "c1a2b3d4"
+ *                         example: "7e23ff0f-25af-4247-9aba-aac11cdde0d7"
  *                       content:
  *                         type: string
- *                         example: "This is a great post!"
+ *                         example: "This is an awesome post!"
  *                       createdAt:
  *                         type: string
  *                         format: date-time
- *                         example: "2025-07-15T12:00:00.000Z"
+ *                         example: "2025-07-17T11:10:37.895Z"
  *                       updatedAt:
  *                         type: string
  *                         format: date-time
- *                         example: "2025-07-15T12:30:00.000Z"
+ *                         example: "2025-07-17T11:11:23.661Z"
  *                       authorId:
  *                         type: string
- *                         example: "user_123"
+ *                         example: "f7d0e6ef-8996-474f-9396-c3ffd92345f3"
  *                       postId:
  *                         type: string
- *                         example: "post_abc"
+ *                         example: "994e1de2-93f3-4df5-909c-b481b8ef3beb"
+ *                 totalComments:
+ *                   type: integer
+ *                   example: 1
+ *                 currentPage:
+ *                   type: integer
+ *                   example: 1
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 1
  *       '401':
  *         description: Unauthorized - Missing or invalid token
  *         content:
@@ -314,6 +337,118 @@
  *                   type: string
  *             example:
  *               message: Post with the given slug does not exist!
+ * 
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Something went wrong. Please try again later.
+ */
+
+/**
+ * @openapi
+ * /api/comments/{id}/responses:
+ *   get:
+ *     summary: Get all responses/comments for a specific comment
+ *     tags:
+ *       - Comment
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Id of the comment to retrieve responses for
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         required: false
+ *         description: Page number (default is 1)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         required: false
+ *         description: Number of comments per page (default is 10)
+ *     responses:
+ *       200:
+ *         description: Comments fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Comments fetched successfully
+ *                 comments:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         example: "7e23ff0f-25af-4247-9aba-aac11cdde0d7"
+ *                       content:
+ *                         type: string
+ *                         example: "This is an awesome post!"
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2025-07-17T11:10:37.895Z"
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2025-07-17T11:11:23.661Z"
+ *                       authorId:
+ *                         type: string
+ *                         example: "f7d0e6ef-8996-474f-9396-c3ffd92345f3"
+ *                       postId:
+ *                         type: string
+ *                         example: "994e1de2-93f3-4df5-909c-b481b8ef3beb"
+ *                 totalComments:
+ *                   type: integer
+ *                   example: 1
+ *                 currentPage:
+ *                   type: integer
+ *                   example: 1
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 1
+ *       '401':
+ *         description: Unauthorized - Missing or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Invalid access token
+ * 
+ *       '404':
+ *         description: Post not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             example:
+ *               message: Post with the given Id does not exist!
  * 
  *       '500':
  *         description: Internal server error

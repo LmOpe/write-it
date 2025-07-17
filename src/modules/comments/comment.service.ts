@@ -57,7 +57,7 @@ export const replyComment = async (commentId: string, userId: string, data: Comm
 
         return newComment;
 
-    } catch (error) {
+    } catch (error: any) {
         throw error;
     }
 }
@@ -95,7 +95,7 @@ export const editComment = async (commentId: string, authorId: string, data: Com
         }
 
         return normalizedComment;
-    } catch (error) {
+    } catch (error: any) {
         throw error;
     }
 }
@@ -125,7 +125,30 @@ export const getPostComments = async (postSlug: string): Promise<CommentArray> =
         })
 
         return comments;
-    } catch (error) {
+    } catch (error: any) {
+        throw error;
+    }
+}
+
+export const getCommentResponses = async (commentId: string): Promise<CommentArray> => {
+    try {
+        const comment = await prisma.comment.findUnique({
+            where: {
+                id: commentId
+            },
+            include: {
+                replies: true,
+                author: true
+            }
+        })
+
+        if (!comment) {
+            throw new ApiError('Comment with the given Id does not exist', 404)
+        }
+
+        return comment.replies;
+
+    } catch (error: any) {
         throw error;
     }
 }
