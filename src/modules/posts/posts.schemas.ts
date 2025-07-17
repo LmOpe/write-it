@@ -1,5 +1,4 @@
 import { createdUserSchema } from '../users/user.schemas';
-import { Comment } from '../comments/comment.model';
 
 import { z } from 'zod';
 

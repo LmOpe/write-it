@@ -22,7 +22,7 @@ model User {
   updatedAt DateTime @updatedAt
   password  String   @db.VarChar(255)
   posts     Post[]
-  // comments  Comment[]
+  comments  Comment[]
 }
 
 model Post {
@@ -35,19 +35,19 @@ model Post {
   updatedAt DateTime  @updatedAt
   authorId  String
   author    User      @relation(fields: [authorId], references: [id], onDelete: NoAction)
-  // comments  Comment[]
+  comments  Comment[]
 }
 
-// model Comment {
-//   id              String    @id @default(uuid())
-//   content         String    @db.Text
-//   createdAt       DateTime  @default(now())
-//   updatedAt       DateTime  @updatedAt
-//   authorId        String
-//   author          User      @relation(fields: [authorId], references: [id], onDelete: NoAction)
-//   postId          String
-//   post            Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
-//   parentCommentId String?
-//   parentComment   Comment?  @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: Cascade)
-//   replies         Comment[] @relation("CommentReplies")
-// }
+model Comment {
+  id              String    @id @default(uuid())
+  content         String    @db.Text
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  authorId        String
+  author          User      @relation(fields: [authorId], references: [id], onDelete: NoAction)
+  postId          String
+  post            Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parentCommentId String?
+  parentComment   Comment?  @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: Cascade)
+  replies         Comment[] @relation("CommentReplies")
+}

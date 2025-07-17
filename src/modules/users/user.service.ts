@@ -52,7 +52,7 @@ export const authenticate = async (data: LoginInput): Promise<LoginResponse> => 
 
         const isMatch = await comparePassword(data.password, user.password)
         if (!isMatch) {
-            throw new Error("Incorrect username or password");
+            throw new ApiError("Incorrect username or password", 401);
         }
 
         const tokenPayload: {

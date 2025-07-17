@@ -99,6 +99,6 @@ export const deletePost = async (postSlug: string, userId: string): Promise<void
             }
         })
     } catch (error) {
-        throw(error);
+        throw error;
     }
 }
