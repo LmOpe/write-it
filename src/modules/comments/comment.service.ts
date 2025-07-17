@@ -63,3 +63,41 @@ export const replyComment = async (commentId: string, userId: string, data: Comm
         throw error;
     }
 }
+
+export const editComment = async (commentId: string, authorId: string, data: CommentInput): Promise<Comment> => {
+    try {
+        const oldComment = await prisma.comment.findUnique({
+            where: {
+                id: commentId,
+                authorId: authorId
+            }
+        })
+
+        if (!oldComment) {
+            throw new ApiError('Comment not found', 404)
+        }
+        else if (oldComment.content === data.content) {
+            return oldComment;
+        }
+
+        const newComment = await prisma.comment.update({
+            where: {
+                id: commentId,
+                authorId: authorId
+            },
+            data: {
+                content: data.content,
+                updatedAt: new Date()
+            }
+        })
+
+        const normalizedComment = {
+            ...newComment,
+            parentCommentId: newComment.parentCommentId ?? undefined
+        }
+
+        return normalizedComment;
+    } catch (error) {
+        throw error;
+    }
+}
